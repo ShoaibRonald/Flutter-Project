@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shoaibronald/main.dart';
 
 class Addscreen extends StatefulWidget {
@@ -13,6 +16,7 @@ class _AddscreenState extends State<Addscreen> {
   TextEditingController ProductName = TextEditingController();
   TextEditingController Price = TextEditingController();
 
+  File? productImage;
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +47,14 @@ class _AddscreenState extends State<Addscreen> {
                   left: 300,
                   top: 180,
                   child: GestureDetector(
-                    onTap: (){
-                      debugPrint("Shoaib Clicked Me");
+                    onTap: ()async{
+                      XFile? SelectImage=await ImagePicker().pickImage(source: ImageSource.gallery);
+                      if(SelectImage != null){
+                        File convertedImage = File(SelectImage.path);
+                        setState(() {
+                          productImage = convertedImage;
+                        });
+                      }
                     },
                     child: Container(
                       width: 60,
