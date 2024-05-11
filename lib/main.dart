@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
+import 'dart:io';
 import 'dart:js';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,8 +13,12 @@ import 'package:shoaibronald/Product.dart';
 import 'package:uuid/uuid.dart';
 
 import 'Addscreen.dart';
+import 'BnB/main_screen.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -24,17 +29,47 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Addscreen (),
+      home: myscreen (),
     );
   }
 }
 
-class MyHome extends StatelessWidget {
+class MyHome extends StatefulWidget {
+  @override
+  State<MyHome> createState() => _MyHomeState();
+}
+
+class _MyHomeState extends State<MyHome> {
   TextEditingController name = TextEditingController();
+
   TextEditingController Gender = TextEditingController();
+
   TextEditingController Email = TextEditingController();
+
   TextEditingController Password = TextEditingController();
-void adduser()async {
+
+  bool isloading = false;
+
+  File? imageFile;
+
+  void imageUpload () async{
+    setState((){
+      isloading != isloading;
+    });
+    UploadTask uploadTask = FirebaseStorage.instance
+    .ref()
+    .child("UserImage")
+    .child(const Uuid().v1())
+    .putFile(imageFile!);
+    TaskSnapshot taskSnapshot = await uploadTask;
+    String imgUrl = await taskSnapshot.ref.getDownloadURL();
+    setState((){
+      isloading != isloading;
+    });
+
+  }
+
+  void adduser()async {
   var userid = const Uuid ().v1();
   try {
     await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -49,6 +84,7 @@ void adduser()async {
   } catch (e) {
   }
 }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
